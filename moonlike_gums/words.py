@@ -1,9 +1,44 @@
-from brown_corpus import adjectives, nouns
 import random
+from dataclasses import dataclass, field
+import nltk
+
+ADJECTIVE_TAGS = ['JJ', 'JJR', 'JJS', 'JJT']
+NOUN_TAGS = ['NN', 'NN+NN', 'NNS', 'NR']
+
+
+@dataclass
+class Words():
+    default_syllables: int = 99
+    adjectives: list[str] = field(default_factory=list)
+    nouns: list[str] = field(default_factory=list)
+
+    @classmethod
+    def from_brown_corpus(cls):
+        obj = cls()
+        for (word, tag) in nltk.corpus.brown.tagged_words():
+            if word.isalpha() and tag in ADJECTIVE_TAGS + NOUN_TAGS:
+                if tag in ADJECTIVE_TAGS:
+                    obj.adjectives.append(word.lower())
+                elif tag in NOUN_TAGS:
+                    obj.nouns.append(word.lower())
+        return obj
+
+    def random_adjective(self, syllables=default_syllables):
+        while True:
+            adj = random.choice(self.adjectives)
+            if count_syllables(adj) <= syllables:
+                return adj
+
+    def random_noun(self, syllables=default_syllables):
+        while True:
+            noun = random.choice(self.nouns)
+            if count_syllables(noun) <= syllables:
+                return noun
+
 
 def random_addends(s):
     """Return two random nonzero integers whose sum is 's'"""
-    r = random.randint(1, s-1)
+    r = random.randint(1, s - 1)
     return r, s - r
 
 
@@ -21,27 +56,3 @@ def count_syllables(word):
     if count == 0:
         count += 1
     return count
-
-
-DEFAULT_SYLLABLES = 99
-
-
-def random_adjective(syllables=DEFAULT_SYLLABLES):
-    while True:
-        adj = random.choice(adjectives)
-        if count_syllables(adj) <= syllables:
-            return adj
-
-
-def random_noun(syllables=DEFAULT_SYLLABLES):
-    while True:
-        noun = random.choice(nouns)
-        if count_syllables(noun) <= syllables:
-            return noun
-
-
-def haikunate(syllables=DEFAULT_SYLLABLES, separator=' '):
-    a, n = random_addends(syllables)
-    adj = random_adjective(a)
-    noun = random_noun(n)
-    return adj + separator + noun

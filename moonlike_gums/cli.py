@@ -1,11 +1,11 @@
 import click
-from moonlike_gums.words import haikunate
+from moonlike_gums.gen import project_name
 
 
 @click.command()
-def project_name():
-    click.echo(haikunate())
+def gen_project_name():
+    click.echo(project_name())
 
 
 if __name__ == "__main__":
-    project_name()
+    gen_project_name()
